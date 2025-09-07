@@ -34,13 +34,33 @@ logger = logging.getLogger(__name__)
 
 # --- Google Sheets Integration ---
 def get_google_sheet():
-    """Connects to Google Sheets and returns the worksheet."""
-    scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',
-             "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-    client = gspread.authorize(creds)
-    sheet = client.open(GOOGLE_SHEET_NAME).sheet1
-    return sheet
+    """
+    Authorizes gspread using credentials from an environment variable
+    and returns the specified Google Sheet.
+    """
+    try:
+        # Get the JSON credentials from the environment variable
+        creds_json_str = os.getenv('GOOGLE_CREDENTIALS')
+        if not creds_json_str:
+            raise ValueError("GOOGLE_CREDENTIALS environment variable not set.")
+        
+        # Parse the JSON string into a Python dictionary
+        credentials = json.loads(creds_json_str)
+
+        # Authorize gspread using the dictionary
+        gc = gspread.service_account_from_dict(credentials)
+        
+        # Get the spreadsheet by its name from an environment variable
+        spreadsheet_name = os.getenv('GOOGLE_SHEET_NAME')
+        if not spreadsheet_name:
+            raise ValueError("GOOGLE_SHEET_NAME environment variable not set.")
+            
+        return gc.open(spreadsheet_name).sheet1
+
+    except Exception as e:
+        logger.error(f"Error authenticating with Google Sheets: {e}")
+        # Re-raise the exception to be caught in the calling function
+        raise
 
 # --- OCR and Parsing Logic ---
 def process_image_with_ocr(image_path):
