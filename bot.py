@@ -22,12 +22,6 @@ from PIL import Image
 # --- Configuration and Setup ---
 load_dotenv() # Load environment variables from .env file
 
-<<<<<<< HEAD
-=======
-# Set Tesseract path. Note the corrected path separator.
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
->>>>>>> c5204e0e08e9a29dfb87b63bfbefc052334e801e
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GOOGLE_SHEET_NAME = os.getenv("GOOGLE_SHEET_NAME")
 
